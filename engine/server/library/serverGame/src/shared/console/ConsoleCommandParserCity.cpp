@@ -22,6 +22,8 @@
 #include "sharedFoundation/NetworkId.h"
 #include "sharedGame/PvpData.h"
 
+#include <limits>
+
 // ======================================================================
 
 namespace ConsoleCommandParserCityNamespace
@@ -448,7 +450,8 @@ bool ConsoleCommandParserCity::performParsing (const NetworkId & userId, const S
 			}
 			time_t const specifiedTime = ::mktime(timeinfo);
 
-			if (specifiedTime <= 0)
+			// The city creation time is stored as an int.
+			if (specifiedTime <= 0 || specifiedTime > std::numeric_limits<int>::max())
 			{
 				result += Unicode::narrowToWide("specified time is invalid\n");
 				result += getErrorMessage(argv[0], ERR_FAIL);
