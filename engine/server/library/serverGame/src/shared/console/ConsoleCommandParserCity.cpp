@@ -307,7 +307,12 @@ bool ConsoleCommandParserCity::performParsing (const NetworkId & userId, const S
 	}
 	else if (isCommand(argv [0], "showCityDetails"))
 	{
-		int const cityId = atoi(Unicode::wideToNarrow(argv[1]).c_str());
+		int32 cityId = 0;
+		if (!parseArg(argv[1], cityId))
+		{
+			result += getErrorMessage(argv[0], ERR_INVALID_ARGUMENTS);
+			return true;
+		}
 		CityInfo const & ci = CityInterface::getCityInfo(cityId);
 
 		if (ci.getCityName().empty())
@@ -419,7 +424,12 @@ bool ConsoleCommandParserCity::performParsing (const NetworkId & userId, const S
 	}
 	else if (isCommand(argv [0], "setCityCreationTime"))
 	{
-		int const cityId = atoi(Unicode::wideToNarrow(argv[1]).c_str());
+		int32 cityId = 0;
+		if (!parseArg(argv[1], cityId))
+		{
+			result += getErrorMessage(argv[0], ERR_INVALID_ARGUMENTS);
+			return true;
+		}
 		CityInfo const & ci = CityInterface::getCityInfo(cityId);
 
 		if (ci.getCityName().empty())
@@ -431,12 +441,11 @@ bool ConsoleCommandParserCity::performParsing (const NetworkId & userId, const S
 		{
 			time_t const rawtime = ::time(nullptr);
 			struct tm * timeinfo = ::localtime(&rawtime);
-			timeinfo->tm_year = atoi(Unicode::wideToNarrow(argv[2]).c_str()) - 1900;
-			timeinfo->tm_mon = atoi(Unicode::wideToNarrow(argv[3]).c_str()) - 1;
-			timeinfo->tm_mday = atoi(Unicode::wideToNarrow(argv[4]).c_str());
-			timeinfo->tm_hour = atoi(Unicode::wideToNarrow(argv[5]).c_str());
-			timeinfo->tm_min = atoi(Unicode::wideToNarrow(argv[6]).c_str());
-			timeinfo->tm_sec = atoi(Unicode::wideToNarrow(argv[7]).c_str());
+			if (!parseDateTimeArgs(argv, 2, *timeinfo))
+			{
+				result += getErrorMessage(argv[0], ERR_INVALID_ARGUMENTS);
+				return true;
+			}
 			time_t const specifiedTime = ::mktime(timeinfo);
 
 			if (specifiedTime <= 0)
@@ -463,7 +472,12 @@ bool ConsoleCommandParserCity::performParsing (const NetworkId & userId, const S
 	}
 	else if (isCommand(argv [0], "showCityRetroactiveCreationTime"))
 	{
-		int const cityId = atoi(Unicode::wideToNarrow(argv[1]).c_str());
+		int32 cityId = 0;
+		if (!parseArg(argv[1], cityId))
+		{
+			result += getErrorMessage(argv[0], ERR_INVALID_ARGUMENTS);
+			return true;
+		}
 
 #ifdef _DEBUG
 		std::string const clusterName = Unicode::wideToNarrow(argv[2]);
