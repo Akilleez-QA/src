@@ -98,7 +98,7 @@ bool ConsoleCommandParserGame::performParsing(const NetworkId & track, const Str
 				for(i = gameServers.begin(); i != gameServers.end(); ++i)
 				{
 					char entry[256] = {"\0"};
-					IGNORE_RETURN(snprintf(entry, sizeof(entry), "%lu, %lu, %s, %s\n", (*i)->getProcessId(), (*i)->getOsProcessId(), (*i)->getRemoteAddress().c_str(), (*i)->getSceneId().c_str()));
+					IGNORE_RETURN(snprintf(entry, sizeof(entry), "%u, %u, %s, %s\n", (*i)->getProcessId(), (*i)->getOsProcessId(), (*i)->getRemoteAddress().c_str(), (*i)->getSceneId().c_str()));
 					result += Unicode::narrowToWide(entry);
 				}
 				ConsoleConnection::onCommandComplete(Unicode::wideToNarrow(result), static_cast<int>(track.getValue()));
@@ -165,7 +165,7 @@ bool ConsoleCommandParserGame::performParsing(const NetworkId & track, const Str
 				{
 					// check to see if the next parameter is a pid to send the command to
 					uint32 pid;
-					sscanf(Unicode::wideToNarrow(argv[1]).c_str(), "%lu", &pid);
+					sscanf(Unicode::wideToNarrow(argv[1]).c_str(), "%u", &pid);
 					GameServerConnection * gameConn = CentralServer::getInstance().getGameServer(pid);
 					if(gameConn)
 					{

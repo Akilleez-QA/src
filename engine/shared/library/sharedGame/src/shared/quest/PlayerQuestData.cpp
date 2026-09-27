@@ -295,11 +295,11 @@ namespace Archive
 
 				if (playerQuestData.isCompleted())
 				{
-					IGNORE_RETURN(snprintf(temp, sizeof(temp)-1, "%lu %hi:", playerQuestDataKey, playerQuestData.hasReceivedReward() ? static_cast<uint16>(1) : static_cast<uint16>(0)));
+					IGNORE_RETURN(snprintf(temp, sizeof(temp)-1, "%u %hi:", playerQuestDataKey, playerQuestData.hasReceivedReward() ? static_cast<uint16>(1) : static_cast<uint16>(0)));
 				}
 				else
 				{
-					IGNORE_RETURN(snprintf(temp, sizeof(temp)-1, "%lu %hi %hi %s:", playerQuestDataKey, playerQuestData.getActiveTasks(), playerQuestData.getCompletedTasks(), playerQuestData.getQuestGiver().getValueString().c_str()));
+					IGNORE_RETURN(snprintf(temp, sizeof(temp)-1, "%u %hi %hi %s:", playerQuestDataKey, playerQuestData.getActiveTasks(), playerQuestData.getCompletedTasks(), playerQuestData.getQuestGiver().getValueString().c_str()));
 				}
 			
 				temp[sizeof(temp)-1]='\0';
@@ -326,7 +326,7 @@ namespace Archive
 				uint16 completedTasks = 0;
 				char giver[100];
 				temp[tempPos]='\0';
-				int const numScanned = sscanf(temp,"%lu %hi %hi %s", &c.key, &activeTasks, &completedTasks, giver);
+				int const numScanned = sscanf(temp,"%u %hi %hi %s", &c.key, &activeTasks, &completedTasks, giver);
 				
 				//active quests
 				switch (numScanned) {
