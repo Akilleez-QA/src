@@ -257,7 +257,7 @@ namespace GameServerNamespace
 	uint64    s_totalObjectCreateMessagesReceived;
 	uint64    s_totalObjectCreateMessagesSent;
 	bool      s_metricsManagerInstalled = false;
-	uint32    s_lastTaskKeepaliveTime = 0;
+	uint64_t  s_lastTaskKeepaliveTime = 0;
 
 #ifdef _DEBUG
 	int s_extraDelayPerFrameMs = 0; // to emulate long loop time
@@ -383,7 +383,7 @@ m_metricsData                         (0),
 m_gameServerReadyObjectIds            (false),
 m_gameServerReadyDatabaseConnected    (false),
 m_gameServerReadyPlanetConnected      (false),
-m_connectionTimeout                   (false),
+m_connectionTimeout                   (0),
 m_chatServerConnection                (0)
 {
 	IGNORE_RETURN(SkillManager::getInstance().getRoot ());
@@ -1691,7 +1691,7 @@ void GameServer::receiveMessage(const MessageDispatch::Emitter & source, const M
 
 			connectToDatabaseProcess(databaseProcessAddress, databaseProcessPort, databaseProcessId);
 
-			m_connectionTimeout = Clock::timeMs() + ConfigServerGame::getConnectToAllGameServersTimeout() * 1000;
+			m_connectionTimeout = Clock::timeMs() + static_cast<uint64_t>(std::max(0, ConfigServerGame::getConnectToAllGameServersTimeout())) * 1000;
 
 			break;
 		}
@@ -4064,8 +4064,8 @@ void GameServer::run(void)
 	int oldSizeOpened = TreeFile::getSizeOfFilesOpenedTotal();
 	int newFilesOpened = 0;
 	int newSizeOpened = 0;
-	uint32_t startTime = Clock::timeMs();
-	uint32_t lastFrameProcessStartTime = startTime;
+	uint64_t startTime = Clock::timeMs();
+	uint64_t lastFrameProcessStartTime = startTime;
 
 	const uint32_t targetFrameTime = static_cast<uint32_t>(1000.0f/getFrameRateLimit());
 
@@ -4186,8 +4186,8 @@ void GameServer::run(void)
 				alreadyReported=false;
 		}
 		
-		uint32_t curTime = Clock::timeMs();
-		lastFrameTime = curTime-startTime;
+		uint64_t const curTime = Clock::timeMs();
+		lastFrameTime = Clock::durationMs<uint32_t>(startTime, curTime);
 		if (!getInstance().getDone())
 			ServerClock::getInstance().incrementServerFrame();
 		startTime = curTime;
@@ -4211,7 +4211,7 @@ void GameServer::run(void)
 				getInstance().sendToPlanetServer(emptyFrameEndMessage);
 			NetworkHandler::clearBytesThisFrame();
 		}
-		s_frameTime = curTime - lastFrameProcessStartTime;
+		s_frameTime = Clock::durationMs<uint32_t>(lastFrameProcessStartTime, curTime);
 	}
 
 	LOG("ServerStartup",("GameServer %u exiting",getInstance().getProcessId()));
