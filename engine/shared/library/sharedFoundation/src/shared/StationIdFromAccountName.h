@@ -53,9 +53,15 @@ namespace StationIdFromAccountName
 	bool parseAlgorithm(char const * name, Algorithm & algorithm);
 	char const * getAlgorithmName(Algorithm algorithm);
 
+	// The account name the LoginServer derives from: leading and trailing
+	// whitespace removed, then lower-cased. Every caller of derive() that
+	// starts from a name as typed or as stored must use this, so that each
+	// one derives from exactly the name the LoginServer did.
+	std::string normalizeAccountName(std::string const & accountName);
+
 	// A numeric account name is its own StationId (as with atoi); any other
-	// name is hashed with the chosen algorithm. accountName is the trimmed,
-	// lower-cased account name.
+	// name is hashed with the chosen algorithm. accountName must already be
+	// normalized (see normalizeAccountName).
 	StationId derive(std::string const & accountName, Algorithm algorithm);
 }
 

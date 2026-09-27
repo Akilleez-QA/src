@@ -160,9 +160,7 @@ void ClientConnection::validateClient(const std::string & id, const std::string 
 
     // and to avoid funny business with atoi and casing
     // make it a separate var than the one we send the auth server
-    std::string lcaseId;
-    lcaseId.resize(trimmedId.size());
-    std::transform(trimmedId.begin(),trimmedId.end(),lcaseId.begin(),::tolower);
+    const std::string lcaseId = StationIdFromAccountName::normalizeAccountName(id);
 
     // make sure username isn't too long
     if (lcaseId.length() > MAX_ACCOUNT_NAME_LENGTH) {

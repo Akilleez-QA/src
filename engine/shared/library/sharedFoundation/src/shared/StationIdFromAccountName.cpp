@@ -7,6 +7,7 @@
 #include "sharedFoundation/FirstSharedFoundation.h"
 #include "sharedFoundation/StationIdFromAccountName.h"
 
+#include <cctype>
 #include <cstdlib>
 #include <cstring>
 
@@ -140,6 +141,23 @@ bool StationIdFromAccountName::parseAlgorithm(char const * const name, Algorithm
 char const * StationIdFromAccountName::getAlgorithmName(Algorithm const algorithm)
 {
 	return algorithm == Gcc64Murmur64A ? "gcc64" : "gcc32";
+}
+
+// ----------------------------------------------------------------------
+
+std::string StationIdFromAccountName::normalizeAccountName(std::string const & accountName)
+{
+	std::string::size_type begin = 0;
+	std::string::size_type end = accountName.size();
+	while (begin < end && isspace(static_cast<unsigned char>(accountName[begin])))
+		++begin;
+	while (end > begin && isspace(static_cast<unsigned char>(accountName[end - 1])))
+		--end;
+
+	std::string name(accountName, begin, end - begin);
+	for (std::string::iterator i = name.begin(); i != name.end(); ++i)
+		*i = static_cast<char>(tolower(static_cast<unsigned char>(*i)));
+	return name;
 }
 
 // ----------------------------------------------------------------------
