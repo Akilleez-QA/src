@@ -5,6 +5,7 @@ on:
     branches: [master, 64-bit-types]
   push:
     branches: [review-ready/server-build-workflow]
+  workflow_dispatch:
 
 permissions:
   contents: read
