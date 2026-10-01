@@ -57,10 +57,13 @@ def revert(body):
     calls = list(re.finditer(r'GetQueuedCompletionStatus\s*\([^;]*&completionKey[^;]*;', changed))
     if len(calls) != 1:
         raise ValueError('Expected one genuine completion-key call')
-    return changed, changed.count('\n', 0, calls[0].end()) + 1
+    # Older MSVC reports the final argument line; modern MSVC reports the call start.
+    locations = (changed.count('\n', 0, calls[0].start()) + 1,
+                 changed.count('\n', 0, calls[0].end()) + 1)
+    return changed, locations
 
 
-def key_failure(text, source, location):
+def key_failure(text, source, locations):
     found = 0
     for line in text.splitlines():
         if not re.search(r'\b(?:fatal\s+)?error\b|not recognized|cannot find', line, re.I):
@@ -70,7 +73,7 @@ def key_failure(text, source, location):
             return False
         path, number, cause = match.groups()
         if (ntpath.normcase(ntpath.normpath(path)) != ntpath.normcase(ntpath.normpath(str(source)))
-                or int(number) != location
+                or int(number) not in locations
                 or not re.fullmatch(r".*GetQueuedCompletionStatus.*cannot convert argument 3 from 'unsigned long(?: int)? \*' to 'PULONG_PTR'.*", cause)):
             return False
         found += 1

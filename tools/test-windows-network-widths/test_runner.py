@@ -18,18 +18,23 @@ for config in ('Debug', 'Release'):
         check(not any(p.name == 'linux' for p in includes))
 for stem in ('TcpClient', 'TcpServer'):
     body = (root / ('engine/shared/library/sharedNetwork/src/win32/' + stem + '.cpp')).read_text()
-    changed, line = revert(body)
+    changed, locations = revert(body)
+    start, line = locations
     check(changed.replace('unsigned long int completionKey = 0;', 'ULONG_PTR completionKey = 0;') == body)
     check(changed.splitlines()[line - 1].strip() == ');')
+    check('GetQueuedCompletionStatus(' in changed.splitlines()[start - 1])
     source = r'C:\test\reverted-' + stem + '.cpp'
     valid = source + '(%d): error C2664: GetQueuedCompletionStatus: cannot convert argument 3 from \'unsigned long *\' to \'PULONG_PTR\'\n' % line
-    check(key_failure(valid, source, line))
+    check(key_failure(valid, source, locations))
     for invalid in ('', valid.replace(source, r'C:\other.cpp'), valid.replace('argument 3', 'argument 2'),
                     valid.replace('GetQueuedCompletionStatus', 'OtherCall'), valid.replace('C2664', 'C1083'),
                     valid + 'LINK : fatal error LNK1104: missing library\n', valid + "'cl' is not recognized\n",
                     valid + source + '(%d): error C2664: unrelated cause\n' % line):
-        check(not key_failure(invalid, source, line))
-    check(not key_failure(valid, source, line + 1))
+        check(not key_failure(invalid, source, locations))
+    check(not key_failure(valid, source, (start - 1, line + 1)))
+    check(key_failure(valid.replace('(%d)' % line, '(%d)' % start), source, locations))
+    for bad_line in (start - 1, start + 1, line - 1, line + 1):
+        check(not key_failure(valid.replace('(%d)' % line, '(%d)' % bad_line), source, locations))
     for bad in (body.replace('ULONG_PTR completionKey = 0;', ''), body + '\nULONG_PTR completionKey = 0;'):
         try:
             revert(bad)

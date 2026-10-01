@@ -15,7 +15,7 @@ The output directory must be new. `--checkout` defaults to this script's checkou
 The 20 cases comprise 12 genuine production-TU compiles (three sources × two
 architectures × Debug/Release) and eight independent TCP completion-key reversions.
 The Win32 reversions must compile. Each x64 reversion must fail only with C2664
-at its actual `GetQueuedCompletionStatus` argument line, identifying argument 3
+at its actual `GetQueuedCompletionStatus` call start or closing argument line, identifying argument 3
 and `PULONG_PTR`; its paired unmodified TU must compile. Unrelated errors fail.
 Positive objects must have the requested x86/x64 COFF machine type.
 
