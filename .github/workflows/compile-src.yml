@@ -42,7 +42,7 @@ jobs:
         if: ${{ always() }}
         run: |
           sha256sum --check ci-results/tracked-before.txt > ci-results/tracked-after.txt
-          git ls-files --others --exclude-standard -- game/server/application/SwgDatabaseServer/src/shared/generated > ci-results/generated-paths.txt
+          git ls-files --others -- game/server/application/SwgDatabaseServer/src/shared/generated > ci-results/generated-paths.txt
       - name: Preserve build evidence
         if: ${{ always() }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
