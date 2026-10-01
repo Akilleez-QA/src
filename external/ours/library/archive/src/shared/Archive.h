@@ -82,8 +82,12 @@ inline void get(ReadIterator & source, std::string & target)
 		size = len;
 	else
 		get(source, size);
-	const char * c = reinterpret_cast<const char * const>(source.getBuffer());
-	target = std::string(c, size);
+	if (size > source.getSize())
+		throw ReadException("Archive::get(string) - payload exceeds remaining buffer");
+	if (size)
+		target.assign(reinterpret_cast<const char *>(source.getBuffer()), size);
+	else
+		target.clear();
 	source.advance(size);
 }
 
@@ -100,6 +104,8 @@ inline void get(ReadIterator & source, ByteStream & target)
 {
 	unsigned int s;
 	get(source, s);
+	if (s > source.getSize())
+		throw ReadException("Archive::get(ByteStream) - payload exceeds remaining buffer");
 	target.put(source.getBuffer(), s);
 	source.advance(s);
 }
@@ -267,19 +273,19 @@ inline void put(ByteStream & target, const char & source)
 
 inline void put(ByteStream & target, const std::string & source)
 {
-	if (source.size() < 65535)
+	unsigned int const size = ArchiveCount::fromSize<unsigned int>(source.size());
+	if (size < 65535)
 	{
-		unsigned short len = static_cast<uint16_t>(source.size());
+		unsigned short len = static_cast<uint16_t>(size);
 		put(target, len);
 	}
 	else
 	{
-		unsigned int const size = ArchiveCount::fromSize<unsigned int>(source.size());
 		unsigned short len = static_cast<uint16_t>(65535);
 		put(target, len);
 		put(target, size);
 	}
-	target.put(source.data(), source.size());
+	target.put(source.data(), size);
 }
 
 //---------------------------------------------------------------------
