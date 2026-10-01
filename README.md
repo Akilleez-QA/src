@@ -1,3 +1,15 @@
+# Akilleez-QA server x64 working fork
+
+**[Server PRs and branch guide](FORK-STATUS.md) · [Complete client/server review index](https://github.com/Akilleez-QA/client-tools/blob/review/client-x64-evidence/review/client-x64/REVIEW-INDEX.md) · [Fork draft → upstream map](https://github.com/Akilleez-QA/client-tools/blob/review/client-x64-evidence/review/client-x64/package-inventory/fork-preparation-map.md)**
+
+As verified on 2026-10-01, all 12 submitted server PRs are open and all reported checks on their current heads pass. The client/server delivery contains 58 upstream PRs in total; maintainer review and merging remain.
+
+This fork's `master` retains upstream source baseline `7d2159a3` plus navigation. The LP64 and shared compatibility work lives on the branches listed in [FORK-STATUS.md](FORK-STATUS.md). Source, CI and runtime evidence remain tied to their named commits; the original README below describes the legacy baseline.
+
+---
+
+## Original upstream README (legacy baseline)
+
 # Star Wars Galaxies Source Code (C++) Repository
 
 This is the main server code for SWGSource 1.2 as originally forked from the https://bitbucket.org/stellabellumswg/ repository.  Please see that repository for original publication and alteration credit.
