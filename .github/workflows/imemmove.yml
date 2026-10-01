@@ -44,8 +44,12 @@ jobs:
         with:
           name: imemmove-linux-results
           path: |
-            ${{ runner.temp }}/imemmove-candidate32/
-            ${{ runner.temp }}/imemmove-candidate64/
-            ${{ runner.temp }}/imemmove-baseline32/
-            ${{ runner.temp }}/imemmove-baseline64/
+            ${{ runner.temp }}/imemmove-candidate32/*.log
+            ${{ runner.temp }}/imemmove-candidate32/results.json
+            ${{ runner.temp }}/imemmove-candidate64/*.log
+            ${{ runner.temp }}/imemmove-candidate64/results.json
+            ${{ runner.temp }}/imemmove-baseline32/*.log
+            ${{ runner.temp }}/imemmove-baseline32/results.json
+            ${{ runner.temp }}/imemmove-baseline64/*.log
+            ${{ runner.temp }}/imemmove-baseline64/results.json
           if-no-files-found: warn
